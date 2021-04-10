@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/pages/product_detail_page.dart';
 import 'package:max_shop/pages/products_overview_page.dart';
 
 void main() {
@@ -33,7 +34,10 @@ class MyApp extends StatelessWidget {
         canvasColor: Color(0xffF6F6E9),
         scaffoldBackgroundColor: Color(0xffF6F6E9),
       ),
-      home: ProductsOverviewPage(),
+      routes: {
+        '/': (_) => ProductsOverviewPage(),
+        ProductDetailPage.routeName: (_) => ProductDetailPage(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
