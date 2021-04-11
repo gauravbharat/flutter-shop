@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/providers/cart_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:max_shop/providers/product_provider.dart';
@@ -9,6 +10,9 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Product is needed on init load only, so set listen: false. Use Consumer down below for fav toggle
     final currentProductItem = Provider.of<Product>(context, listen: false);
+
+    // Not interested in listening to cart here, so don't subscribe to Cart changes
+    final cart = Provider.of<Cart>(context, listen: false);
 
     // Use ClipRRect to add rounded corner on widgets which does not have border radius property
     return ClipRRect(
@@ -44,7 +48,13 @@ class ProductItem extends StatelessWidget {
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
             color: Theme.of(context).accentColor,
-            onPressed: () {},
+            onPressed: () {
+              cart.addItem(
+                currentProductItem.id,
+                currentProductItem.price,
+                currentProductItem.title,
+              );
+            },
           ),
           title: Text(
             currentProductItem.title,
