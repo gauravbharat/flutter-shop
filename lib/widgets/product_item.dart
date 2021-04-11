@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:max_shop/providers/product.dart';
 import 'package:max_shop/pages/product_detail_page.dart';
 
 class ProductItem extends StatelessWidget {
-  final String id;
-  final String title;
-  final String imageUrl;
-
-  ProductItem({
-    @required this.id,
-    @required this.title,
-    @required this.imageUrl,
-  });
-
   @override
   Widget build(BuildContext context) {
+    final currentProductItem = Provider.of<ProductProvider>(context);
+
     // Use ClipRRect to add rounded corner on widgets which does not have border radius property
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
@@ -22,11 +17,11 @@ class ProductItem extends StatelessWidget {
           onTap: () {
             Navigator.of(context).pushNamed(
               ProductDetailPage.routeName,
-              arguments: id,
+              arguments: currentProductItem.id,
             );
           },
           child: Image.network(
-            imageUrl,
+            currentProductItem.imageUrl,
             fit: BoxFit.cover,
           ),
         ),
@@ -34,9 +29,12 @@ class ProductItem extends StatelessWidget {
           // backgroundColor: Colors.black54,
           backgroundColor: Theme.of(context).primaryColor.withOpacity(0.87),
           leading: IconButton(
-            icon: Icon(Icons.favorite),
+            icon: Icon(currentProductItem.isFavourite
+                ? Icons.favorite
+                : Icons.favorite_outline),
             color: Theme.of(context).accentColor,
-            onPressed: () {},
+            onPressed:
+                Provider.of<ProductProvider>(context).toggleFavouriteStatus,
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
@@ -44,7 +42,7 @@ class ProductItem extends StatelessWidget {
             onPressed: () {},
           ),
           title: Text(
-            title,
+            currentProductItem.title,
             textAlign: TextAlign.center,
           ),
         ),
