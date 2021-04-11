@@ -19,6 +19,8 @@ class ProductsGrid extends StatelessWidget {
           childAspectRatio: 3 / 2,
           crossAxisSpacing: 10.0,
           mainAxisSpacing: 10.0),
+      // Alternate ChangeNotifierProvider syntax: if context is not required, and object is reused
+      // use value instead of builder/create
       itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
         value: loadedProducts[index],
         child: ProductItem(),

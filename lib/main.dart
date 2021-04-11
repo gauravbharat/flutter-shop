@@ -12,9 +12,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Alternate ChangeNotifierProvider syntax: if context is not required, use value instead of builder/create
-    return ChangeNotifierProvider.value(
-      value: ProductsProvider(),
+    // For instantiating a class, which won't be reused, use a create CNP pattern
+    return ChangeNotifierProvider(
+      create: (_) => ProductsProvider(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
