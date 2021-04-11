@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/providers/orders.dart';
 import 'package:max_shop/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 import 'package:max_shop/providers/cart_provider.dart' show Cart;
@@ -40,7 +41,15 @@ class CartPage extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Set orders object and clear cart
+                      // set listen: false, since only dispatch action and no listener here
+                      Provider.of<Orders>(context, listen: false).addOrder(
+                        cartContainer.items.values.toList(),
+                        cartContainer.totalAmount,
+                      );
+                      cartContainer.clear();
+                    },
                     child: Text('ORDER NOW'),
                   ),
                 ],
