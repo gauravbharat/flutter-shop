@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/providers/cart_provider.dart';
 import 'package:max_shop/providers/products_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +13,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // When creating a new class instance, which won't be reused, use a create CNP pattern
-    return ChangeNotifierProvider(
-      create: (_) => ProductsProvider(),
+    // Created a group of app level providers
+    return MultiProvider(
+      providers: [
+        // When creating a new class instance i.e. providing a brand new object, use a create CNP pattern
+        ChangeNotifierProvider(
+          create: (_) => ProductsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartProvider(),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
