@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             },
           ),
           accentColor: Color(0xFFFD5F00),
-          cardColor: Color(0xFF99bcd3),
+          cardColor: Color(0xffF6F6E9),
           highlightColor: Color(0xFFFD5F00),
           canvasColor: Color(0xffF6F6E9),
           scaffoldBackgroundColor: Color(0xffF6F6E9),

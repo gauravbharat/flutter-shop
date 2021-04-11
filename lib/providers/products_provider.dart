@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:max_shop/providers/product.dart';
 
 class ProductsProvider with ChangeNotifier {
+  bool _showFavouritesOnly = false;
+
   List<ProductProvider> _items = [
     ProductProvider(
       id: 'p1',
@@ -37,7 +39,16 @@ class ProductsProvider with ChangeNotifier {
     ),
   ];
 
+  void toggleShowFavouritesOnly(bool value) {
+    _showFavouritesOnly = value;
+    notifyListeners();
+  }
+
   List<ProductProvider> get items {
+    if (_showFavouritesOnly) {
+      return _items.where((product) => product.isFavourite).toList();
+    }
+
     return [..._items];
   }
 
