@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class ProductProvider with ChangeNotifier {
+class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -8,7 +8,7 @@ class ProductProvider with ChangeNotifier {
   final String imageUrl;
   bool isFavourite;
 
-  ProductProvider({
+  Product({
     @required this.id,
     @required this.title,
     @required this.description,

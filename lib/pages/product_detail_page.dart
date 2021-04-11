@@ -13,7 +13,7 @@ class ProductDetailPage extends StatelessWidget {
     // We wish to load the product detail only once when this page is initialized, and don't wish the
     // build method to be called each time the ProductsProvider is updated. Pass a listen: false as
     // the second argument to the Provider.of() method
-    final ProductProvider currentProduct = Provider.of<ProductsProvider>(
+    final Product currentProduct = Provider.of<Products>(
       context,
       listen: false,
     ).findById(productId);

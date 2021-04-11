@@ -18,10 +18,10 @@ class MyApp extends StatelessWidget {
       providers: [
         // When creating a new class instance i.e. providing a brand new object, use a create CNP pattern
         ChangeNotifierProvider(
-          create: (_) => ProductsProvider(),
+          create: (_) => Products(),
         ),
         ChangeNotifierProvider(
-          create: (_) => CartProvider(),
+          create: (_) => Cart(),
         ),
       ],
       child: MaterialApp(
