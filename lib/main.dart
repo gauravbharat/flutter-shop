@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/pages/cart_page.dart';
 import 'package:max_shop/providers/cart_provider.dart';
 import 'package:max_shop/providers/products_provider.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (_) => ProductsOverviewPage(),
           ProductDetailPage.routeName: (_) => ProductDetailPage(),
+          CartPage.routeName: (_) => CartPage(),
         },
         debugShowCheckedModeBanner: false,
       ),
