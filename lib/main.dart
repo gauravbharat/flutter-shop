@@ -12,7 +12,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // For instantiating a class, which won't be reused, use a create CNP pattern
+    // When creating a new class instance, which won't be reused, use a create CNP pattern
     return ChangeNotifierProvider(
       create: (_) => ProductsProvider(),
       child: MaterialApp(
