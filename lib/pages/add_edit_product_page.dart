@@ -9,6 +9,15 @@ class AddEditProductPage extends StatefulWidget {
 
 class _AddEditProductPageState extends State<AddEditProductPage> {
   final _priceFocusNode = FocusNode();
+  final _descriptionFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    // dispose focus nodes to avoid memory leaks
+    super.dispose();
+    _priceFocusNode.dispose();
+    _descriptionFocusNode.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +43,15 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   focusNode: _priceFocusNode,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Description'),
+                  maxLines: 3,
+                  keyboardType: TextInputType.multiline,
+                  focusNode: _descriptionFocusNode,
                 ),
               ],
             ),
