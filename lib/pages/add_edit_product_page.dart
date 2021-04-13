@@ -10,13 +10,31 @@ class AddEditProductPage extends StatefulWidget {
 class _AddEditProductPageState extends State<AddEditProductPage> {
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
+  final _imageUrlFocusNode = FocusNode();
+  final _imageUrlController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _imageUrlFocusNode.addListener(_updateImageUrl);
+  }
+
+  void _updateImageUrl() {
+    // show url image when field loses focus
+    if (!_imageUrlFocusNode.hasFocus) {
+      setState(() {});
+    }
+  }
 
   @override
   void dispose() {
     // dispose focus nodes to avoid memory leaks
     super.dispose();
+    _imageUrlFocusNode.removeListener(_updateImageUrl);
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
+    _imageUrlFocusNode.dispose();
+    _imageUrlController.dispose();
   }
 
   @override
@@ -52,6 +70,45 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocusNode,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 100.0,
+                      height: 100.0,
+                      margin: EdgeInsets.only(top: 8.0, right: 10.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      child: _imageUrlController.text.isEmpty
+                          ? Text('Enter a URL')
+                          : FittedBox(
+                              child: Image.network(
+                                _imageUrlController.text,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(labelText: 'Image URL'),
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.done,
+                        controller: _imageUrlController,
+                        focusNode: _imageUrlFocusNode,
+                        enableInteractiveSelection: true,
+                        // Set empty state to rebuild the page because
+                        // the latest image url was not picked up for the image
+                        onEditingComplete: () {
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
