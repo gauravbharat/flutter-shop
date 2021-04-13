@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/pages/add_edit_product_page.dart';
 import 'package:max_shop/pages/orders_page.dart';
 import 'package:max_shop/pages/user_products_page.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
           CartPage.routeName: (_) => CartPage(),
           OrdersPage.routeName: (_) => OrdersPage(),
           UserProductsPage.routeName: (_) => UserProductsPage(),
+          AddEditProductPage.routeName: (_) => AddEditProductPage(),
         },
         debugShowCheckedModeBanner: false,
       ),
