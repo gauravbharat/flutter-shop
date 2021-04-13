@@ -54,6 +54,24 @@ class ProductItem extends StatelessWidget {
                 currentProductItem.price,
                 currentProductItem.title,
               );
+
+              // reaches out to nearest Scaffold in the widget tree, the product overview page in this case
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Added item to cart!',
+                  ),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeCartItem(currentProductItem.id);
+                    },
+                  ),
+                  // backgroundColor: Colors.lightGreen.withOpacity(0.44),
+                ),
+              );
             },
           ),
           title: Text(
