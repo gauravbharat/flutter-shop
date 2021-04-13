@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/pages/orders_page.dart';
 import 'package:max_shop/providers/orders.dart';
 import 'package:max_shop/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,8 @@ class CartPage extends StatelessWidget {
                         cartContainer.totalAmount,
                       );
                       cartContainer.clear();
+                      Navigator.of(context)
+                          .pushReplacementNamed(OrdersPage.routeName);
                     },
                     child: Text('ORDER NOW'),
                   ),
