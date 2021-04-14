@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:max_shop/providers/products_provider.dart';
 import 'package:max_shop/providers/product_provider.dart' show Product;
 
 class AddEditProductPage extends StatefulWidget {
@@ -14,6 +17,8 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
   final _imageUrlFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
 
+  bool _isInit = true;
+
   // Interact with the state behind the form widget using the GlobalKey
   final _form = GlobalKey<FormState>();
   Product _editedProduct = Product(
@@ -24,10 +29,39 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
     imageUrl: '',
   );
 
+  Map<String, dynamic> _initValues = {
+    'title': '',
+    'price': '',
+    'description': '',
+    'imageUrl': '',
+  };
+
   @override
   void initState() {
     super.initState();
+
     _imageUrlFocusNode.addListener(_updateImageUrl);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
   }
 
   void _updateImageUrl() {
@@ -47,11 +81,11 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
       return 'Please enter a valid URL.';
     }
 
-    if (!imageUrl.endsWith('.png') ||
-        !imageUrl.endsWith('.jpg') ||
-        !imageUrl.endsWith('.jpeg')) {
-      return 'Please enter a valid image URL.';
-    }
+    // if (!imageUrl.endsWith('.png') ||
+    //     !imageUrl.endsWith('.jpg') ||
+    //     !imageUrl.endsWith('.jpeg')) {
+    //   return 'Please enter a valid image URL.';
+    // }
 
     return null;
   }
@@ -62,11 +96,25 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
       return;
     }
 
+    final action = '${_editedProduct.id != null ? 'updated' : 'added'}';
+
     _form.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
+
+    if (_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Product ${action} successfully!')));
+    Navigator.of(context).pop();
+    //
+    // print(_editedProduct.title);
+    // print(_editedProduct.price);
+    // print(_editedProduct.description);
+    // print(_editedProduct.imageUrl);
   }
 
   @override
@@ -84,11 +132,11 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('${_editedProduct.id != null ? 'Edit' : 'Add'} Product'),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: _saveForm,
+            onPressed: () => _saveForm(),
           )
         ],
       ),
@@ -100,6 +148,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(labelText: 'Title'),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
@@ -117,11 +166,13 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                       price: _editedProduct.price,
                       description: _editedProduct.description,
                       imageUrl: _editedProduct.imageUrl,
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavourite: _editedProduct.isFavourite,
                     );
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(labelText: 'Price'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -150,11 +201,13 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                       price: double.parse(value),
                       description: _editedProduct.description,
                       imageUrl: _editedProduct.imageUrl,
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavourite: _editedProduct.isFavourite,
                     );
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -176,7 +229,8 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                       price: _editedProduct.price,
                       description: value,
                       imageUrl: _editedProduct.imageUrl,
-                      id: null,
+                      id: _editedProduct.id,
+                      isFavourite: _editedProduct.isFavourite,
                     );
                   },
                 ),
@@ -223,7 +277,8 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                             price: _editedProduct.price,
                             description: _editedProduct.description,
                             imageUrl: value,
-                            id: null,
+                            id: _editedProduct.id,
+                            isFavourite: _editedProduct.isFavourite,
                           );
                         },
                       ),
