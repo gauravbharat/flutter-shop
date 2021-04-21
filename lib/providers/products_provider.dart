@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:max_shop/providers/product_provider.dart';
 
 class Products with ChangeNotifier {
+  Uri _url = Uri.parse(
+      'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json');
+
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -49,17 +55,35 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => product.id == productId);
   }
 
-  void addProduct(Product p) {
-    final newProduct = Product(
-      title: p.title,
-      description: p.description,
-      price: p.price,
-      imageUrl: p.imageUrl,
-      id: DateTime.now().toString(),
-    );
+  Future<void> addProduct(Product p) async {
+    try {
+      final response = await http.post(
+        _url,
+        body: json.encode({
+          'title': p.title,
+          'description': p.description,
+          'imageUrl': p.imageUrl,
+          'price': p.price,
+          'isFavourite': p.isFavourite,
+        }),
+      );
 
-    _items.add(newProduct);
-    notifyListeners();
+      final addedProduct = json.decode(response.body);
+
+      final newProduct = Product(
+        title: p.title,
+        description: p.description,
+        price: p.price,
+        imageUrl: p.imageUrl,
+        id: addedProduct['name'],
+      );
+
+      _items.add(newProduct);
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error; // throw error to handle at the
+    }
   }
 
   void updateProduct(String productId, Product newProduct) {
