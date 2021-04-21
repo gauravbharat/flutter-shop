@@ -108,61 +108,57 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
       _isLoading = true;
     });
 
-    if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
+    try {
+      if (_editedProduct.id != null) {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } else {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Product $action successfully!')));
+
       Navigator.of(context).pop();
-    } else {
-      try {
-        await Provider.of<Products>(context, listen: false)
-            .addProduct(_editedProduct);
+    } catch (error) {
+      print('inside product page $error');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Product $action successfully!')));
-
-        Navigator.of(context).pop();
-      } catch (error) {
-        print('inside product page $error');
-
-        Platform.isIOS
-            ? showCupertinoDialog(
-                context: context,
-                builder: (ctx) => CupertinoAlertDialog(
-                  title: Text('An error occurred!'),
-                  content: Text('Something went wrong!'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Okay'),
-                    )
-                  ],
-                ),
-              )
-            : showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('An error occurred!'),
-                  content: Text('Something went wrong!'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Okay'),
-                    )
-                  ],
-                ),
-              );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      Platform.isIOS
+          ? showCupertinoDialog(
+              context: context,
+              builder: (ctx) => CupertinoAlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Something went wrong!'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Okay'),
+                  )
+                ],
+              ),
+            )
+          : showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text('An error occurred!'),
+                content: Text('Something went wrong!'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Okay'),
+                  )
+                ],
+              ),
+            );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
 
     //

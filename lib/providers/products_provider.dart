@@ -83,10 +83,30 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String productId, Product newProduct) {
-    final prodIndex = _items.indexWhere((product) => product.id == productId);
-    _items[prodIndex] = newProduct;
-    notifyListeners();
+  Future<void> updateProduct(String productId, Product newProduct) async {
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
+
+    try {
+      await http.patch(
+        url,
+        body: json.encode(
+          {
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+          },
+        ),
+      );
+
+      final prodIndex = _items.indexWhere((product) => product.id == productId);
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 
   void deleteProduct(String productId) {
