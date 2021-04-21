@@ -110,7 +110,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String productId) {
+  Future<void> deleteProduct(String productId) async {
     final url = Uri.parse(
         'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
 
@@ -118,22 +118,20 @@ class Products with ChangeNotifier {
         _items.indexWhere((prod) => prod.id == productId);
     var existingProduct = _items[existingProductIndex];
 
-    // "optimistic updating" i.e. not waiting for the action to complete
-    http.delete(url).then((response) {
-      if (response.statusCode >= 400) {
-        // throwing exception here calls the catchError and skips next code here in this block
-        throw HttpException('Could not delete product!');
-      }
+    _items.removeAt(existingProductIndex);
+    notifyListeners();
 
-      // release memory
-      existingProduct = null;
-    }).catchError((_) {
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
       // reload the deleted product if any server error
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
-    });
 
-    _items.removeAt(existingProductIndex);
-    notifyListeners();
+      throw HttpException('Could not delete product!');
+    }
+
+    // release memory
+    existingProduct = null;
   }
 }
