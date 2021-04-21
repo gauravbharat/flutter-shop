@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:max_shop/models/http_exceptions.dart';
 import 'dart:convert';
 
 import 'package:max_shop/providers/product_provider.dart';
@@ -110,7 +111,29 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String productId) {
-    _items.removeWhere((product) => product.id == productId);
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
+
+    final existingProductIndex =
+        _items.indexWhere((prod) => prod.id == productId);
+    var existingProduct = _items[existingProductIndex];
+
+    // "optimistic updating" i.e. not waiting for the action to complete
+    http.delete(url).then((response) {
+      if (response.statusCode >= 400) {
+        // throwing exception here calls the catchError and skips next code here in this block
+        throw HttpException('Could not delete product!');
+      }
+
+      // release memory
+      existingProduct = null;
+    }).catchError((_) {
+      // reload the deleted product if any server error
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+    });
+
+    _items.removeAt(existingProductIndex);
     notifyListeners();
   }
 }
