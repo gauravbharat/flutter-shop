@@ -10,6 +10,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Product is needed on init load only, so set listen: false. Use Consumer down below for fav toggle
     final currentProductItem = Provider.of<Product>(context, listen: false);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     // Not interested in listening to cart here, so don't subscribe to Cart changes
     final cart = Provider.of<Cart>(context, listen: false);
@@ -42,7 +43,19 @@ class ProductItem extends StatelessWidget {
                   ? Icons.favorite
                   : Icons.favorite_outline),
               color: Theme.of(context).accentColor,
-              onPressed: Provider.of<Product>(context).toggleFavouriteStatus,
+              onPressed: () async {
+                try {
+                  await Provider.of<Product>(context, listen: false)
+                      .toggleFavouriteStatus(currentProductItem.id);
+                } catch (error) {
+                  print(error);
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(error.toString()),
+                    ),
+                  );
+                }
+              },
             ),
           ),
           trailing: IconButton(
