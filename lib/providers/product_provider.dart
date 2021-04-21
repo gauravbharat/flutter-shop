@@ -30,11 +30,19 @@ class Product with ChangeNotifier {
     isFavourite = !isFavourite;
     notifyListeners();
 
-    final response =
-        await http.patch(url, body: json.encode({'isFavourite': isFavourite}));
+    try {
+      final response = await http.patch(
+        url,
+        body: json.encode({'isFavourite': isFavourite}),
+      );
 
-    if (response.statusCode >= 400) {
-      //rollback
+      if (response.statusCode >= 400) {
+        //rollback
+        isFavourite = existingFavouriteStatus;
+        notifyListeners();
+        throw HttpException('Error updating favourite status!');
+      }
+    } catch (error) {
       isFavourite = existingFavouriteStatus;
       notifyListeners();
       throw HttpException('Error updating favourite status!');
