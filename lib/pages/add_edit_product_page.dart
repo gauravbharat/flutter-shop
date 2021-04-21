@@ -120,20 +120,12 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
         await Provider.of<Products>(context, listen: false)
             .addProduct(_editedProduct);
 
-        setState(() {
-          _isLoading = false;
-        });
-
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Product $action successfully!')));
 
         Navigator.of(context).pop();
       } catch (error) {
         print('inside product page $error');
-
-        setState(() {
-          _isLoading = false;
-        });
 
         Platform.isIOS
             ? showCupertinoDialog(
@@ -166,6 +158,10 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                   ],
                 ),
               );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
 
