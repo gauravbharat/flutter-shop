@@ -41,20 +41,7 @@ class CartPage extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  TextButton(
-                    onPressed: () {
-                      // Set orders object and clear cart
-                      // set listen: false, since only dispatch action and no listener here
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                        cartContainer.items.values.toList(),
-                        cartContainer.totalAmount,
-                      );
-                      cartContainer.clear();
-                      Navigator.of(context)
-                          .pushReplacementNamed(OrdersPage.routeName);
-                    },
-                    child: Text('ORDER NOW'),
-                  ),
+                  OrderButton(cartContainer: cartContainer),
                 ],
               ),
             ),
@@ -75,6 +62,47 @@ class CartPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cartContainer,
+  }) : super(key: key);
+
+  final Cart cartContainer;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: (widget.cartContainer.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              // Set orders object and clear cart
+              // set listen: false, since only dispatch action and no listener here
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cartContainer.items.values.toList(),
+                widget.cartContainer.totalAmount,
+              );
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cartContainer.clear();
+              Navigator.of(context).pushReplacementNamed(OrdersPage.routeName);
+            },
+      child: _isLoading ? CircularProgressIndicator() : Text('ORDER NOW'),
     );
   }
 }

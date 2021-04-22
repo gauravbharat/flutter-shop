@@ -21,6 +21,12 @@ class Product with ChangeNotifier {
     this.isFavourite = false,
   });
 
+  void _rollbackFavouriteUpdate(bool existingFavouriteStatus) {
+    isFavourite = existingFavouriteStatus;
+    notifyListeners();
+    throw HttpException('Error updating favourite status!');
+  }
+
   Future<void> toggleFavouriteStatus(String productId) async {
     final url = Uri.parse(
         'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
@@ -38,14 +44,10 @@ class Product with ChangeNotifier {
 
       if (response.statusCode >= 400) {
         //rollback
-        isFavourite = existingFavouriteStatus;
-        notifyListeners();
-        throw HttpException('Error updating favourite status!');
+        _rollbackFavouriteUpdate(existingFavouriteStatus);
       }
     } catch (error) {
-      isFavourite = existingFavouriteStatus;
-      notifyListeners();
-      throw HttpException('Error updating favourite status!');
+      _rollbackFavouriteUpdate(existingFavouriteStatus);
     }
 
     existingFavouriteStatus = null;
