@@ -19,15 +19,13 @@ class _OrdersPageState extends State<OrdersPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero).then((_) async {
-      setState(() {
-        _isLoading = true;
-      });
-      await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    _isLoading = true;
+
+    Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then(
+          (_) => setState(() {
+            _isLoading = false;
+          }),
+        );
   }
 
   @override
