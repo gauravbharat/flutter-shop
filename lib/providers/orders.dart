@@ -18,8 +18,8 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final _url = Uri.parse(
-      'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/orders.json');
+  final String authToken;
+  Orders(this.authToken, this._orders);
 
   List<OrderItem> _orders = [];
 
@@ -28,8 +28,10 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
     try {
-      final response = await http.get(_url);
+      final response = await http.get(url);
       final List<OrderItem> loadedOrders = [];
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
 
@@ -67,11 +69,13 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
     final timestamp = DateTime.now();
 
     try {
       final response = await http.post(
-        _url,
+        url,
         body: json.encode({
           'amount': total,
           'dateTime': timestamp.toIso8601String(),

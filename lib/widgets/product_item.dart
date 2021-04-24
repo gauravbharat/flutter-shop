@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/providers/auth_provider.dart';
 import 'package:max_shop/providers/cart_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ class ProductItem extends StatelessWidget {
     // Product is needed on init load only, so set listen: false. Use Consumer down below for fav toggle
     final currentProductItem = Provider.of<Product>(context, listen: false);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final authData = Provider.of<Auth>(context, listen: false);
 
     // Not interested in listening to cart here, so don't subscribe to Cart changes
     final cart = Provider.of<Cart>(context, listen: false);
@@ -46,7 +48,8 @@ class ProductItem extends StatelessWidget {
               onPressed: () async {
                 try {
                   await Provider.of<Product>(context, listen: false)
-                      .toggleFavouriteStatus(currentProductItem.id);
+                      .toggleFavouriteStatus(
+                          currentProductItem.id, authData.token);
                 } catch (error) {
                   print(error);
                   scaffoldMessenger.showSnackBar(
