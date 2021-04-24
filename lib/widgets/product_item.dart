@@ -49,7 +49,10 @@ class ProductItem extends StatelessWidget {
                 try {
                   await Provider.of<Product>(context, listen: false)
                       .toggleFavouriteStatus(
-                          currentProductItem.id, authData.token);
+                    currentProductItem.id,
+                    authData.token,
+                    authData.userId,
+                  );
                 } catch (error) {
                   print(error);
                   scaffoldMessenger.showSnackBar(

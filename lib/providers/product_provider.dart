@@ -27,9 +27,13 @@ class Product with ChangeNotifier {
     throw HttpException('Error updating favourite status!');
   }
 
-  Future<void> toggleFavouriteStatus(String productId, String token) async {
+  Future<void> toggleFavouriteStatus(
+    String productId,
+    String token,
+    String userId,
+  ) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$token');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/userFavourites/$userId/$productId.json?auth=$token');
 
     var existingFavouriteStatus = isFavourite;
 
@@ -37,9 +41,9 @@ class Product with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({'isFavourite': isFavourite}),
+        body: json.encode(isFavourite),
       );
 
       if (response.statusCode >= 400) {

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:max_shop/models/http_exceptions.dart';
+import 'package:max_shop/providers/auth_provider.dart';
 import 'dart:convert';
 
 import 'package:max_shop/providers/product_provider.dart';
 
 class Products with ChangeNotifier {
-  final String authToken;
+  final Auth authData;
 
   List<Product> _items = [];
 
-  Products(this.authToken, this._items) : super() {
+  Products(this.authData, this._items) : super() {
     // _fetchAndSetProducts();
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&equalTo="${authData.userId}"' : '';
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=${authData.token}$filterString');
 
     try {
       final response = await http.get(url);
@@ -25,6 +28,11 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+
+      final getUserFavouritesUrl = Uri.parse(
+          'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/userFavourites/${authData.userId}.json?auth=${authData.token}');
+      final favouriteResponse = await http.get(getUserFavouritesUrl);
+      final favouriteData = json.decode(favouriteResponse.body);
 
       final List<Product> loadedProducts = [];
 
@@ -36,7 +44,9 @@ class Products with ChangeNotifier {
             description: productData['description'],
             price: productData['price'],
             imageUrl: productData['imageUrl'],
-            isFavourite: productData['isFavourite'],
+            isFavourite: favouriteData == null
+                ? false
+                : favouriteData[productId] ?? false,
           ),
         );
       });
@@ -62,7 +72,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product p) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=${authData.token}');
     try {
       final response = await http.post(
         url,
@@ -71,7 +81,7 @@ class Products with ChangeNotifier {
           'description': p.description,
           'imageUrl': p.imageUrl,
           'price': p.price,
-          'isFavourite': p.isFavourite,
+          'creatorId': authData.userId,
         }),
       );
 
@@ -95,7 +105,7 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(String productId, Product newProduct) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=${authData.token}');
 
     try {
       await http.patch(
@@ -121,7 +131,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String productId) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=${authData.token}');
 
     final existingProductIndex =
         _items.indexWhere((prod) => prod.id == productId);

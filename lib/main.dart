@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         //Use proxy provider when a provider depends on another provider
         ChangeNotifierProxyProvider<Auth, Products>(
           update: (ctx, authData, previousProducts) => Products(
-            authData.token,
+            authData,
             previousProducts == null ? [] : previousProducts.items,
           ),
           create: null,
