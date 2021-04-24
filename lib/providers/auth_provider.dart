@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:max_shop/models/http_exceptions.dart';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -23,8 +25,16 @@ class Auth with ChangeNotifier {
         }),
       );
 
-      print('response ${json.decode(response.body)}');
-    } catch (error) {}
+      final responseData = json.decode(response.body);
+
+      print('responseData $responseData');
+
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']['message']);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   Future<void> signup(String email, String password) async {
