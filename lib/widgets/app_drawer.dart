@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:max_shop/pages/orders_page.dart';
+import 'package:max_shop/pages/products_overview_page.dart';
 import 'package:max_shop/pages/user_products_page.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -17,7 +18,8 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.shop),
             title: Text('Shop'),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed('/');
+              Navigator.of(context)
+                  .pushReplacementNamed(ProductsOverviewPage.routeName);
             },
           ),
           ListTile(

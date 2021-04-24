@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:max_shop/pages/add_edit_product_page.dart';
+import 'package:max_shop/pages/auth_screen.dart';
 import 'package:max_shop/pages/orders_page.dart';
 import 'package:max_shop/pages/user_products_page.dart';
+import 'package:max_shop/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:max_shop/providers/cart_provider.dart' show Cart;
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // When creating a new class instance i.e. providing a brand new object, use a create CNP pattern
+        ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(
           create: (_) => Products(),
         ),
@@ -59,7 +62,8 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Color(0xffF6F6E9),
         ),
         routes: {
-          '/': (_) => ProductsOverviewPage(),
+          '/': (_) => AuthScreen(),
+          ProductsOverviewPage.routeName: (_) => ProductsOverviewPage(),
           ProductDetailPage.routeName: (_) => ProductDetailPage(),
           CartPage.routeName: (_) => CartPage(),
           OrdersPage.routeName: (_) => OrdersPage(),

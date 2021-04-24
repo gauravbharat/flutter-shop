@@ -11,6 +11,8 @@ import 'package:max_shop/widgets/products_grid.dart';
 enum FilterOptions { Favourites, All }
 
 class ProductsOverviewPage extends StatefulWidget {
+  static const routeName = '/home';
+
   @override
   _ProductsOverviewPageState createState() => _ProductsOverviewPageState();
 }
