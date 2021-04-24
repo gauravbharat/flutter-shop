@@ -6,18 +6,20 @@ import 'dart:convert';
 import 'package:max_shop/providers/product_provider.dart';
 
 class Products with ChangeNotifier {
-  Uri _url = Uri.parse(
-      'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json');
+  final String authToken;
 
   List<Product> _items = [];
 
-  Products() : super() {
+  Products(this.authToken, this._items) : super() {
     // _fetchAndSetProducts();
   }
 
   Future<void> fetchAndSetProducts() async {
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
+
     try {
-      final response = await http.get(_url);
+      final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
 
       if (extractedData == null) {
@@ -59,9 +61,11 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product p) async {
+    final url = Uri.parse(
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.post(
-        _url,
+        url,
         body: json.encode({
           'title': p.title,
           'description': p.description,
@@ -91,7 +95,7 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(String productId, Product newProduct) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken');
 
     try {
       await http.patch(
@@ -117,7 +121,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String productId) async {
     final url = Uri.parse(
-        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json');
+        'https://garyd-max-shop-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken');
 
     final existingProductIndex =
         _items.indexWhere((prod) => prod.id == productId);

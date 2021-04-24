@@ -26,8 +26,13 @@ class MyApp extends StatelessWidget {
       providers: [
         // When creating a new class instance i.e. providing a brand new object, use a create CNP pattern
         ChangeNotifierProvider(create: (_) => Auth()),
-        ChangeNotifierProvider(
-          create: (_) => Products(),
+        //Use proxy provider when a provider depends on another provider
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (ctx, authData, previousProducts) => Products(
+            authData.token,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
+          create: null,
         ),
         ChangeNotifierProvider(
           create: (_) => Cart(),
