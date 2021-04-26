@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:max_shop/pages/add_edit_product_page.dart';
 import 'package:max_shop/pages/auth_screen.dart';
 import 'package:max_shop/pages/orders_page.dart';
+import 'package:max_shop/pages/splash_screen.dart';
 import 'package:max_shop/pages/user_products_page.dart';
 import 'package:max_shop/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -72,7 +73,16 @@ class MyApp extends StatelessWidget {
             canvasColor: Color(0xffF6F6E9),
             scaffoldBackgroundColor: Color(0xffF6F6E9),
           ),
-          home: authData.isAuth ? ProductsOverviewPage() : AuthScreen(),
+          home: authData.isAuth
+              ? ProductsOverviewPage()
+              : FutureBuilder(
+                  future: authData.tryAutoLogin(),
+                  builder: (ctx, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             ProductsOverviewPage.routeName: (_) => ProductsOverviewPage(),
             ProductDetailPage.routeName: (_) => ProductDetailPage(),

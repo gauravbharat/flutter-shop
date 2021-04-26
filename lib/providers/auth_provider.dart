@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:max_shop/models/http_exceptions.dart';
 
 class Auth with ChangeNotifier {
@@ -62,8 +63,16 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
-      _autoLogout();
+      _setAutoLogout();
       notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      final userData = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiryDate': _expiryDate.toIso8601String()
+      });
+      prefs.setString('userData', userData);
     } catch (error) {
       throw error;
     }
@@ -77,7 +86,30 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, 'signInWithPassword');
   }
 
-  void logout() {
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+
+    final cachedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final expiryDate = DateTime.parse(cachedUserData['expiryDate']);
+
+    if (expiryDate.isBefore(DateTime.now())) {
+      prefs.remove('userData');
+      return false;
+    }
+
+    _token = cachedUserData['token'];
+    _userId = cachedUserData['userId'];
+    _expiryDate = expiryDate;
+    notifyListeners();
+    _setAutoLogout();
+    return true;
+  }
+
+  Future<void> logout() async {
     _token = null;
     _expiryDate = null;
     _userId = null;
@@ -85,9 +117,13 @@ class Auth with ChangeNotifier {
       _authTimer.cancel();
     }
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    // prefs.remove('userData');
+    prefs
+        .clear(); // use this only when this app stores no other persistent data than 'userData'
   }
 
-  void _autoLogout() {
+  void _setAutoLogout() {
     if (_authTimer != null) {
       _authTimer.cancel();
     }
