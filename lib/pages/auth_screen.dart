@@ -124,7 +124,7 @@ class _AuthCardState extends State<AuthCard>
       ),
     );
     // Rebuild widget on height change
-    _heightAnimation.addListener(() => setState(() {}));
+    // _heightAnimation.addListener(() => setState(() {}));
   }
 
   @override
@@ -219,12 +219,20 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        // height: _authMode == AuthMode.Signup ? 320 : 260,
-        height: _heightAnimation.value.height,
-        constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
+      // using AnimatedBuilder instead of AddListener
+      child: AnimatedBuilder(
+        animation: _heightAnimation,
+        builder: (ctx, formChild) => Container(
+          // height: _authMode == AuthMode.Signup ? 320 : 260,
+          height: _heightAnimation.value.height,
+          constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
+          width: deviceSize.width * 0.75,
+          padding: EdgeInsets.all(16.0),
+          child: formChild,
+        ),
+        // this child would remain out of rebuild condition for this builder
+        // is passed as a child to the builder method and
+        // won't be re-rendered on each frame change as the Container
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
