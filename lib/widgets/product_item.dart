@@ -28,8 +28,11 @@ class ProductItem extends StatelessWidget {
               arguments: currentProductItem.id,
             );
           },
-          child: Image.network(
-            currentProductItem.imageUrl,
+          child: FadeInImage(
+            placeholder: AssetImage('assets/images/product-placeholder.png'),
+            image: NetworkImage(
+              currentProductItem.imageUrl,
+            ),
             fit: BoxFit.cover,
           ),
         ),
