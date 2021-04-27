@@ -19,16 +19,19 @@ class ProductDetailPage extends StatelessWidget {
     ).findById(productId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(currentProduct.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 300,
-              width: double.infinity,
-              child: Hero(
+      // appBar: AppBar(
+      //   title: Text(currentProduct.title),
+      // ),
+      // Animate image body into appbar using slivers (scrollable areas on the screen)
+      // create multiple scrollable items using slivers
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(currentProduct.title),
+              background: Hero(
                 tag: currentProduct.id,
                 child: Image.network(
                   currentProduct.imageUrl,
@@ -36,30 +39,38 @@ class ProductDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Text(
-              '\$${currentProduct.price}',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 20.0,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              SizedBox(
+                height: 10.0,
               ),
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              width: double.infinity,
-              child: Text(
-                '${currentProduct.description}',
+              Text(
+                '\$${currentProduct.price}',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 20.0,
+                ),
                 textAlign: TextAlign.center,
-                softWrap: true,
               ),
-            ),
-          ],
-        ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                width: double.infinity,
+                child: Text(
+                  '${currentProduct.description}',
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                ),
+              ),
+              SizedBox(
+                height: 800,
+              )
+            ]),
+          ),
+        ],
       ),
     );
   }
