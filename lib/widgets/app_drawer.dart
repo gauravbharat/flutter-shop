@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:max_shop/pages/auth_screen.dart';
+import 'package:max_shop/helpers/custom_route.dart';
 import 'package:max_shop/pages/orders_page.dart';
 import 'package:max_shop/pages/products_overview_page.dart';
 import 'package:max_shop/pages/user_products_page.dart';
@@ -29,7 +29,13 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.payment),
             title: Text('Orders'),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed(OrdersPage.routeName);
+              // Navigator.of(context).pushReplacementNamed(OrdersPage.routeName);
+              // Use custom route to apply animation to specific route
+              Navigator.of(context).pushReplacement(
+                CustomRoute(
+                  builder: (ctx) => OrdersPage(),
+                ),
+              );
             },
           ),
           Divider(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:max_shop/helpers/custom_page_transition.dart';
 import 'package:max_shop/pages/add_edit_product_page.dart';
 import 'package:max_shop/pages/auth_screen.dart';
 import 'package:max_shop/pages/orders_page.dart';
@@ -72,6 +73,11 @@ class MyApp extends StatelessWidget {
             highlightColor: Color(0xFFFD5F00),
             canvasColor: Color(0xffF6F6E9),
             scaffoldBackgroundColor: Color(0xffF6F6E9),
+            // Use page transition theme to apply animation to all routes
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            }),
           ),
           home: authData.isAuth
               ? ProductsOverviewPage()
